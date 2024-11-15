@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kongu Engineering College - Cutoff Calculator</title>
+  <!-- Link to Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-roboto antialiased">
+
+  <!-- Header Section -->
+  <header class="bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 py-10">
+    <div class="container mx-auto text-center">
+      <h1 class="text-4xl text-white font-extrabold tracking-wide">Kongu Engineering College</h1>
+      <p class="text-xl text-white mt-4 font-light">A modern and interactive way to calculate your cutoffs</p>
+    </div>
+  </header>
+
+  <!-- Main Content Section -->
+  <main class="py-12">
+    <div class="container mx-auto px-4">
+      <!-- User Guide Section -->
+      <div class="bg-white p-8 rounded-lg shadow-lg mb-10">
+        <h2 class="text-3xl font-semibold text-center mb-6 text-purple-600">How to Use the Cutoff Calculator</h2>
+        <div class="text-lg text-gray-700 space-y-4">
+          <p><strong>Step 1:</strong> Select the domain (e.g., Engineering, Medical, Agriculture, or Arts).</p>
+          <p><strong>Step 2:</strong> Enter the marks for the subjects (you can enter marks for up to 4 subjects depending on your selected domain).</p>
+          <p><strong>Step 3:</strong> Select your desired protocol (TCP or UDP).</p>
+          <p><strong>Step 4:</strong> Click on "Calculate" to view your cutoff score.</p>
+          <p>If you need help, feel free to contact our support team for assistance.</p>
+        </div>
+      </div>
+
+      <!-- Cutoff Form -->
+      <div class="bg-white p-8 rounded-lg shadow-lg">
+        <h2 class="text-3xl font-semibold text-center mb-6 text-purple-600">Calculate Your Cutoff</h2>
+
+        <form id="cutoff-form" class="space-y-6">
+          <div>
+            <label for="domain" class="block text-lg font-medium text-gray-700">Select Domain</label>
+            <select id="domain" class="w-full p-3 mt-2 border border-gray-300 rounded-lg shadow-sm">
+              <option value="engineering">Engineering</option>
+              <option value="medical">Medical</option>
+              <option value="agriculture">Agriculture</option>
+              <option value="arts">Arts</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="protocol" class="block text-lg font-medium text-gray-700">Select Protocol</label>
+            <select id="protocol" class="w-full p-3 mt-2 border border-gray-300 rounded-lg shadow-sm">
+              <option value="TCP">TCP</option>
+              <option value="UDP">UDP</option>
+            </select>
+          </div>
+
+          <!-- Subject Marks Input Fields -->
+          <div>
+            <label for="subject1" class="block text-lg font-medium text-gray-700">Subject 1 Marks</label>
+            <input type="number" id="subject1" class="w-full p-3 mt-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Enter marks for Subject 1" required>
+          </div>
+          <div>
+            <label for="subject2" class="block text-lg font-medium text-gray-700">Subject 2 Marks</label>
+            <input type="number" id="subject2" class="w-full p-3 mt-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Enter marks for Subject 2" required>
+          </div>
+          <div>
+            <label for="subject3" class="block text-lg font-medium text-gray-700">Subject 3 Marks</label>
+            <input type="number" id="subject3" class="w-full p-3 mt-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Enter marks for Subject 3" required>
+          </div>
+          <div id="optional-subject" class="hidden">
+            <label for="subject4" class="block text-lg font-medium text-gray-700">Subject 4 Marks (Optional for Agriculture)</label>
+            <input type="number" id="subject4" class="w-full p-3 mt-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Enter marks for Subject 4">
+          </div>
+
+          <!-- Error Message -->
+          <p id="error-message" class="text-red-500 text-center hidden">Please fill all required fields correctly!</p>
+
+          <button type="submit" class="w-full p-4 bg-gradient-to-r from-purple-600 to-red-500 text-white rounded-lg shadow-lg text-xl hover:from-purple-500 hover:to-red-400 transition duration-300">Calculate</button>
+        </form>
+      </div>
+
+      <!-- Result Section -->
+      <div class="mt-10 text-center">
+        <h2 class="text-2xl font-semibold text-gray-800">Result: </h2>
+        <p id="result" class="text-3xl font-bold text-purple-600 mt-4"></p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="bg-gray-800 py-6">
+    <div class="container mx-auto text-center text-white">
+      <p>&copy; 2024 Kongu Engineering College. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Tailwind Custom Script -->
+  <script>
+    // Show optional subject input based on domain selection
+    document.getElementById("domain").addEventListener("change", function() {
+      const optionalSubject = document.getElementById("optional-subject");
+      optionalSubject.style.display = this.value === "agriculture" ? "block" : "none";
+    });
+
+    // Handle form submission
+    document.querySelector("form").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const domain = document.getElementById("domain").value;
+      const protocol = document.getElementById("protocol").value;
+      const marks = [
+        document.getElementById("subject1").value,
+        document.getElementById("subject2").value,
+        document.getElementById("subject3").value,
+        document.getElementById("subject4").value || 0
+      ];
+
+      // Input validation
+      if (marks.some(mark => mark === "" || isNaN(mark))) {
+        document.getElementById("error-message").classList.remove("hidden");
+        return;
+      }
+
+      document.getElementById("error-message").classList.add("hidden");
+
+      // Display protocol and domain in console
+      console.log(`Protocol: ${protocol}, Domain: ${domain}`);
+
+      // Calculate the cutoff
+      const result = calculateCutoff(domain, marks);
+      document.getElementById("result").innerText = result;
+    });
+
+    // Simple logic to calculate the cutoff score
+    function calculateCutoff(domain, marks) {
+      let result = 0;
+      switch(domain) {
+        case "engineering":
+          result = (2 * Number(marks[0]) + 4 * Number(marks[1]) + 2 * Number(marks[2])) / 8;
+          break;
+        case "medical":
+          result = (3 * Number(marks[0]) + 3 * Number(marks[1]) + 2 * Number(marks[2])) / 8;
+          break;
+        case "agriculture":
+          result = (Number(marks[0]) + Number(marks[1]) + Number(marks[2]) + Number(marks[3])) / 4;
+          break;
+        case "arts":
+          result = (Number(marks[0]) + Number(marks[1]) + 2 * Number(marks[2])) / 4;
+          break;
+        default:
+          result = 0;
+      }
+      return result.toFixed(2);
+    }
+  </script>
+
+</body>
+</html>
